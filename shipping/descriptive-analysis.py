@@ -2,6 +2,8 @@ import pandas as pd
 import seaborn as sns
 from matplotlib import pyplot as plt
 
+dataSources = ['2607.TW.approx']
+
 approx = pd.read_csv("2607.TW.approx.csv")
 
 approx['ReturnRate'] = approx['Close'].pct_change()
