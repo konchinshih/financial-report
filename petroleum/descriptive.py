@@ -3,7 +3,7 @@ import seaborn as sns
 from matplotlib import pyplot as plt
 
 MARKET = '^TWII'
-SOURCES = ['2607.TW', '2609.TW', '2610.TW']
+SOURCES = ['6505.TW', '8926.TW', '9931.TW']
 
 
 def getApprox(source: str) -> pd.DataFrame:
