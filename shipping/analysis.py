@@ -1,10 +1,11 @@
+import math
 import pandas as pd
 import seaborn as sns
 from matplotlib import pyplot as plt
 
 MARKET = '^TWII'
 SOURCES = ['2607.TW', '2609.TW', '2610.TW']
-
+EVENTDATE = 6 # 2021-03-23
 
 def getApprox(source: str) -> pd.DataFrame:
     approx = pd.read_csv(f"{source}.approx.csv")
@@ -57,6 +58,7 @@ AR['Date'] = marketTest['Date']
 CAR = pd.DataFrame()
 CAR['Date'] = marketTest['Date']
 
+# draw plots
 for source in SOURCES:
 
     approx = getApprox(source)
@@ -68,6 +70,7 @@ for source in SOURCES:
     AR[source] = test['AbnormalReturnRate']
     CAR[source] = test['CumulativeAbnormalReturnRate']
 
+
 AR['average'] = sum(AR[source] for source in SOURCES) / len(SOURCES)
 CAR['average'] = sum(CAR[source] for source in SOURCES) / len(SOURCES)
 
@@ -78,3 +81,21 @@ plt.show();
 sns.lineplot(data=CAR, x='Date', y='average')
 plt.title('Average Cumulative Abnormal Return Rate')
 plt.show()
+
+S2AAR0 = 0
+S2CAAR0 = 0
+
+# perform tests
+for source in SOURCES:
+    S2AAR0 += (AR.at[EVENTDATE, source] - AR.at[EVENTDATE, 'average']) ** 2
+    S2CAAR0 += (CAR.at[EVENTDATE, source] - CAR.at[EVENTDATE, 'average']) ** 2
+    
+S2AAR0 /= len(SOURCES) - 1
+S2CAAR0 /= len(SOURCES) - 1
+
+tAAR0t = AR.at[EVENTDATE, 'average'] / math.sqrt(S2AAR0)
+tCAAR0t = CAR.at[EVENTDATE, 'average'] / math.sqrt(S2CAAR0)
+
+print('tAAR0t =', tAAR0t)
+print('tCAAR0t =', tCAAR0t)
+
