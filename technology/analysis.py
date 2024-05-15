@@ -1,11 +1,51 @@
 import math
+from requests import get
+from time import sleep
+from os.path import isfile
 import pandas as pd
 import seaborn as sns
 from matplotlib import pyplot as plt
 
 MARKET = '^TWII'
-SOURCES = ['2303.TW', '2454.TW', '4967.TW']
+SOURCES = [
+    '2302.TW', '2303.TW', '2329.TW', '2330.TW', '2337.TW',
+    '2338.TW', '2340.TW', '2342.TW', '2344.TW', '2351.TW',
+    '2363.TW', '2369.TW', '2379.TW', '2388.TW', '2401.TW',
+    '2408.TW', '2434.TW', '2436.TW', '2441.TW', '2449.TW',
+    '2451.TW', '2454.TW', '2458.TW', '2481.TW', '3006.TW',
+    '3014.TW', '3016.TW', '3034.TW', '3035.TW', '3041.TW',
+    '3094.TW', '3189.TW', '3257.TW', '3413.TW', '3443.TW',
+    '3450.TW', '3530.TW', '3532.TW', '3545.TW', '3583.TW',
+    '3588.TW', '6271.TW', '3661.TW', '3686.TW', '3711.TW',
+    '4967.TW', '4968.TW', '5222.TW'
+]
 EVENTDATE = 6 # 2021-03-23
+
+
+headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36"}
+
+for source in SOURCES:
+    approxFile = f"{source}.approx.csv"
+    if not isfile(approxFile):
+        print(f"Fetching {approxFile}")
+        with open(approxFile, 'w') as file:
+            requests = get(
+                f"https://query1.finance.yahoo.com/v7/finance/download/{source}?period1=1593993600&period2=1615507200&interval=1d&events=history&includeAdjustedClose=true", 
+                headers=headers)
+            file.write(requests.text)
+        sleep(0.5)
+
+    testFile = f"{source}.test.csv"
+    if not isfile(testFile):
+        print(f"Fetching {testFile}")
+        with open(testFile, 'w') as file:
+            requests = get(
+                f"https://query1.finance.yahoo.com/v7/finance/download/{source}?period1=1615593600&period2=1617321600&interval=1d&events=history&includeAdjustedClose=true", 
+                headers=headers)
+            file.write(requests.text)
+        sleep(0.5)
+
+
 
 def getApprox(source: str) -> pd.DataFrame:
     approx = pd.read_csv(f"{source}.approx.csv")
